@@ -1,0 +1,5 @@
+{
+  "@aws-cdk/core:enableStackNameDuplicates": "true",
+  "aws-cdk:enableDiffNoFail": "true",
+  "codeCommitRepoForAPIs": "backend-services"
+}
