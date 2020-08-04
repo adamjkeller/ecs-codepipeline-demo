@@ -18,9 +18,8 @@ import elb = require("@aws-cdk/aws-elasticloadbalancingv2");
 import log = require("@aws-cdk/aws-logs");
 import ecr = require("@aws-cdk/aws-ecr");
 import s3 = require("@aws-cdk/aws-s3");
+import cloudWatch = require('@aws-cdk/aws-cloudwatch');
 import codePipelineActions = require("@aws-cdk/aws-codepipeline-actions");
-
-
 import lambda = require('@aws-cdk/aws-lambda');
 import codePipeline = require("@aws-cdk/aws-codepipeline");
 
@@ -75,9 +74,7 @@ export class BlueGreenUsingEcsStack extends cdk.Stack {
                 "ecr:InitiateLayerUpload",
                 "ecr:UploadLayerPart",
                 "ecr:CompleteLayerUpload",
-                "ecr:PutImage",
-                "ecs:DescribeTaskDefinition",
-                "sts:GetCallerIdentity"
+                "ecr:PutImage"
             ],
             resources: ["*"]
         });
@@ -202,6 +199,46 @@ export class BlueGreenUsingEcsStack extends cdk.Stack {
             targetGroups: [greenGroup]
         });
 
+        // ================================================================================================
+        // CloudWatch Alarms for 5XX errors
+        const blue5xxMetric = new cloudWatch.Metric({
+            namespace: 'AWS/ApplicationELB',
+            metricName: 'HTTPCode_Target_5XX_Count',
+            dimensions: {
+                TargetGroup: blueGroup.targetGroupFullName,
+                LoadBalancer: alb.loadBalancerFullName
+            },
+            statistic: cloudWatch.Statistic.SUM,
+            period: Duration.minutes(1)
+        });
+        const blueGroupAlarm = new cloudWatch.Alarm(this, "blue5xxErrors", {
+            alarmName: "Blue_5xx_Alarm",
+            alarmDescription: "CloudWatch Alarm for the 5xx errors of Blue target group",
+            metric: blue5xxMetric,
+            threshold: 1,
+            evaluationPeriods: 1
+        });
+
+        const green5xxMetric = new cloudWatch.Metric({
+            namespace: 'AWS/ApplicationELB',
+            metricName: 'HTTPCode_Target_5XX_Count',
+            dimensions: {
+                TargetGroup: greenGroup.targetGroupFullName,
+                LoadBalancer: alb.loadBalancerFullName
+            },
+            statistic: cloudWatch.Statistic.SUM,
+            period: Duration.minutes(1)
+        });
+        const greenGroupAlarm = new cloudWatch.Alarm(this, "green5xxErrors", {
+            alarmName: "Green_5xx_Alarm",
+            alarmDescription: "CloudWatch Alarm for the 5xx errors of Green target group",
+            metric: green5xxMetric,
+            threshold: 1,
+            evaluationPeriods: 1
+        });
+
+        // ================================================================================================
+
 
         // ================================================================================================
         // DUMMY TASK DEFINITION for the initial service creation
@@ -296,7 +333,9 @@ export class BlueGreenUsingEcsStack extends cdk.Stack {
                 TestListenerArn: albTestListener.listenerArn,
                 EcsClusterName: cluster.clusterName,
                 EcsServiceName: demoAppService.serviceName,
-                TerminationWaitTime: BlueGreenUsingEcsStack.ECS_TASKSET_TERMINATION_WAIT_TIME
+                TerminationWaitTime: BlueGreenUsingEcsStack.ECS_TASKSET_TERMINATION_WAIT_TIME,
+                BlueGroupAlarm: blueGroupAlarm.alarmName,
+                GreenGroupAlarm: greenGroupAlarm.alarmName,
             }
         });
 

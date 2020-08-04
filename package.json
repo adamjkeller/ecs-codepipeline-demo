@@ -39,6 +39,7 @@
     "@aws-cdk/aws-events-targets": "1.54",
     "@aws-cdk/aws-iam": "1.54",
     "@aws-cdk/aws-lambda": "1.54",
-    "@aws-cdk/aws-s3": "1.54"
+    "@aws-cdk/aws-s3": "1.54",
+    "@aws-cdk/aws-cloudwatch": "1.54"
   }
 }

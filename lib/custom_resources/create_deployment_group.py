@@ -44,6 +44,8 @@ def create_deployment_group(event, context):
         cluster_name_ = event['ResourceProperties']['EcsClusterName']
         service_name_ = event['ResourceProperties']['EcsServiceName']
         termination_wait_time = event['ResourceProperties']['TerminationWaitTime']
+        blue_group_alarm_ = event['ResourceProperties']['BlueGroupAlarm']
+        green_group_alarm_ = event['ResourceProperties']['GreenGroupAlarm']
 
         client.create_deployment_group(
             applicationName=application_name_,
@@ -63,11 +65,24 @@ def create_deployment_group(event, context):
                     'actionOnTimeout': 'CONTINUE_DEPLOYMENT'
                 }
             },
+            alarmConfiguration={
+                'enabled': True,
+                'ignorePollAlarmFailure': False,
+                'alarms': [
+                    {
+                        'name': blue_group_alarm_
+                    },
+                    {
+                        'name': green_group_alarm_
+                    },
+                ]
+            },
             autoRollbackConfiguration={
                 'enabled': True,
                 'events': [
                     'DEPLOYMENT_FAILURE',
-                    'DEPLOYMENT_STOP_ON_REQUEST'
+                    'DEPLOYMENT_STOP_ON_REQUEST',
+                    'DEPLOYMENT_STOP_ON_ALARM'
                 ]
             },
             ecsServices=[
@@ -133,6 +148,8 @@ def update_deployment_group(event, context):
         cluster_name_ = event['ResourceProperties']['EcsClusterName']
         service_name_ = event['ResourceProperties']['EcsServiceName']
         termination_wait_time = event['ResourceProperties']['TerminationWaitTime']
+        blue_group_alarm_ = event['ResourceProperties']['BlueGroupAlarm']
+        green_group_alarm_ = event['ResourceProperties']['GreenGroupAlarm']
 
         client.update_deployment_group(
             applicationName=application_name_,
@@ -153,11 +170,24 @@ def update_deployment_group(event, context):
                     'actionOnTimeout': 'CONTINUE_DEPLOYMENT'
                 }
             },
+            alarmConfiguration={
+                'enabled': True,
+                'ignorePollAlarmFailure': False,
+                'alarms': [
+                    {
+                        'name': blue_group_alarm_
+                    },
+                    {
+                        'name': green_group_alarm_
+                    },
+                ]
+            },
             autoRollbackConfiguration={
                 'enabled': True,
                 'events': [
                     'DEPLOYMENT_FAILURE',
-                    'DEPLOYMENT_STOP_ON_REQUEST'
+                    'DEPLOYMENT_STOP_ON_REQUEST',
+                    'DEPLOYMENT_STOP_ON_ALARM'
                 ]
             },
             ecsServices=[
