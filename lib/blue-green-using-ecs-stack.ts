@@ -172,7 +172,8 @@ export class BlueGreenUsingEcsStack extends cdk.Stack {
             healthCheck: {
                 path: "/",
                 timeout: Duration.seconds(10),
-                interval: Duration.seconds(15)
+                interval: Duration.seconds(15),
+                healthyHttpCodes: "200,404"
             }
         });
 
@@ -185,7 +186,8 @@ export class BlueGreenUsingEcsStack extends cdk.Stack {
             healthCheck: {
                 path: "/",
                 timeout: Duration.seconds(10),
-                interval: Duration.seconds(15)
+                interval: Duration.seconds(15),
+                healthyHttpCodes: "200,404"
             }
         });
 
