@@ -1,6 +1,6 @@
 # ECS blue/ green deployment 
 
-We will deploy a demo application on ECS Fargate and update the application using Blue/Green deployment capability of CodeDeploy and ECS
+We will deploy a demo application on ECS Fargate and update the application using Blue/Green deployment capability of CodeDeploy and ECS. Please refer the [ECS workshop](https://ecsworkshop.com/blue_green_deployments/) for more guidance.
  
 ## Build and deploy the stack
 
@@ -51,7 +51,9 @@ We will deploy a demo application on ECS Fargate and update the application usin
         ``` 
 * This will trigger the Blue/Green deployment for the ECS application
 * The **Blue Deployment** is live on Port **80**
+  ![Blue deployment](blue-deployment.png)
 * You can test the **Green Deployment** on port **8080**
+  ![Green deployment](green-deployment.png)
 * Once the deployment is complete demo application with green background is visible
 
 ## Cleanup
