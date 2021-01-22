@@ -213,8 +213,8 @@ export class BlueGreenUsingEcsStack extends cdk.Stack {
             statistic: cloudWatch.Statistic.SUM,
             period: Duration.minutes(1)
         });
-        const blueGroupAlarm = new cloudWatch.Alarm(this, "blue5xxErrors", {
-            alarmName: "Blue_5xx_Alarm",
+        const blueGroupAlarm = new cloudWatch.Alarm(this, "blue4xxErrors", {
+            alarmName: "Blue_4xx_Alarm",
             alarmDescription: "CloudWatch Alarm for the 4xx errors of Blue target group",
             metric: blue4xxMetric,
             threshold: 1,
